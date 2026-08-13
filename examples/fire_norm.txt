@@ -1,0 +1,3 @@
+Architectural plans should clearly label room names, room areas, exits, and egress stairs.
+Public building egress doors should have a clear width of at least 900 mm. Corridors, exits, and stairs should be reviewed against occupant load.
+Fire doors should include fire rating labels, and fire compartments should be clearly represented in the drawing.

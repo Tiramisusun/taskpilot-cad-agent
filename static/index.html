@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>TaskPilot CAD Agent</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="workspace">
+        <header class="topbar">
+          <div>
+            <h1>TaskPilot CAD Agent</h1>
+            <p>Upload a DXF drawing and standards text, then let the Agent review layers, annotations, door width, egress, fire safety, and safe auto-fix items.</p>
+          </div>
+          <div class="status" id="status">Waiting</div>
+        </header>
+
+        <section class="controls">
+          <label class="upload-box">
+            <span>DXF Drawing</span>
+            <input id="drawingFile" type="file" accept=".dxf" />
+          </label>
+          <label class="upload-box">
+            <span>Standards Text</span>
+            <input id="normFile" type="file" accept=".txt,.md,.csv,.dxf" />
+          </label>
+          <label class="query-box">
+            <span>Review Focus</span>
+            <textarea id="normQuery" rows="4">Check door clear width, egress exits, stairs, fire doors, room areas, and layer annotations based on the uploaded standards.</textarea>
+          </label>
+          <button id="reviewButton" disabled>Start Agent</button>
+        </section>
+
+        <section class="summary-grid">
+          <article>
+            <h2>Drawing Summary</h2>
+            <pre id="drawingSummary">No drawing uploaded.</pre>
+          </article>
+          <article>
+            <h2>Standards Retrieval</h2>
+            <pre id="normSummary">Upload a standards text file, or run with built-in checks only.</pre>
+          </article>
+        </section>
+
+        <section class="agent-grid">
+          <article>
+            <h2>Agent Runtime</h2>
+            <pre id="taskSummary">No task yet.</pre>
+          </article>
+          <article>
+            <h2>Live Events</h2>
+            <div id="events" class="event-list"></div>
+          </article>
+        </section>
+
+        <section class="results">
+          <div class="result-header">
+            <h2>Review Results</h2>
+            <div id="downloads" class="downloads"></div>
+          </div>
+          <div id="issues" class="issue-list"></div>
+        </section>
+      </section>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>
