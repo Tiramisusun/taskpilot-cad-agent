@@ -1,2 +1,6 @@
 fastapi>=0.125.0
 uvicorn>=0.38.0
+deepagents>=0.6.0
+langchain>=1.0.0
+langchain-openai>=1.0.0
+python-dotenv>=1.0.0
