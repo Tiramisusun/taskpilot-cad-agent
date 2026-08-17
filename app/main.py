@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from uuid import uuid4
 
+from dotenv import load_dotenv
 from pydantic import BaseModel
 from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.responses import FileResponse, StreamingResponse
@@ -17,10 +18,13 @@ from .reviewer import review_drawing
 from .taskpilot.memory import MemoryStore
 from .taskpilot.middleware import MiddlewareStack
 from .taskpilot.observability import EventLog
+from .taskpilot.deepagent_runtime import DeepAgentRuntime
 from .taskpilot.runtime import AgentRuntime
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / ".env")
+
 DATA_DIR = BASE_DIR / "data"
 UPLOAD_DIR = DATA_DIR / "uploads"
 REPORT_DIR = DATA_DIR / "reports"
@@ -41,6 +45,7 @@ EVENT_LOG = EventLog(LOG_DIR)
 MEMORY = MemoryStore.load(MEMORY_PATH)
 MIDDLEWARE = MiddlewareStack(EVENT_LOG, MEMORY)
 RUNTIME = AgentRuntime(DRAWINGS, NORMS, REPORT_DIR, EVENT_LOG, MIDDLEWARE)
+DEEP_RUNTIME = DeepAgentRuntime(RUNTIME)
 
 
 class ReviewRequest(BaseModel):
@@ -137,6 +142,17 @@ async def create_task(payload: TaskRequest) -> dict:
         raise HTTPException(status_code=404, detail="Drawing not found. Please upload it again.")
     task = RUNTIME.create_task(payload.objective, payload.drawing_id, payload.norm_query)
     await RUNTIME.run_task(task.task_id)
+    result = task.to_dict()
+    _register_task_review_downloads(result)
+    return result
+
+
+@app.post("/api/tasks/deepagent")
+async def create_deepagent_task(payload: TaskRequest) -> dict:
+    if payload.drawing_id not in DRAWINGS:
+        raise HTTPException(status_code=404, detail="Drawing not found. Please upload it again.")
+    task = RUNTIME.create_task(payload.objective, payload.drawing_id, payload.norm_query)
+    await DEEP_RUNTIME.run_task(task.task_id)
     result = task.to_dict()
     _register_task_review_downloads(result)
     return result

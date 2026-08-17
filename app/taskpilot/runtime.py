@@ -58,6 +58,30 @@ class AgentRuntime:
         self.event_log.emit(task.task_id, EventType.TASK_CREATED, "Task created.", task.to_dict())
         return task
 
+    def new_review_id(self) -> str:
+        return uuid4().hex
+
+    def compose_deepagent_result(
+        self,
+        review_result: dict[str, Any],
+        norm_result: dict[str, Any],
+        repair_result: dict[str, Any],
+        report_result: dict[str, Any],
+    ) -> dict[str, Any]:
+        issues = review_result.get("issues", [])
+        return {
+            "summary": f"CAD review completed with {len(issues)} issues found.",
+            "review_id": report_result.get("review_id"),
+            "drawing": review_result.get("drawing", {}),
+            "issues": issues,
+            "issue_count": len(issues),
+            "norm_matches": norm_result.get("norm_matches", []),
+            "downloads": report_result.get("downloads", {}),
+            "repair_result": repair_result,
+            "events": [],
+            "failed_steps": [],
+        }
+
     async def run_task(self, task_id: str) -> AgentTask:
         task = self._require_task(task_id)
         if not task.drawing_id:
